@@ -94,10 +94,6 @@ public class MainActivity extends AppCompatActivity {
                     et_pass_login.setError("please enter password");
                     et_pass_login.requestFocus();
                 }
-                else if(email.isEmpty() && password.isEmpty())
-                {
-                    Toast.makeText(MainActivity.this,"Fields are empty!",Toast.LENGTH_LONG).show();
-                }
                 else{
                     //for shredpref
                     if(v == btn_login)
