@@ -19,8 +19,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 
 public class SignInActivity extends AppCompatActivity {
     EditText et_email;
@@ -31,6 +35,11 @@ public class SignInActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     FirebaseAuth mFirebaseAuth;
     Boolean flag = true;
+    long id=0;
+
+    DatabaseReference mRootRef;
+    Member member;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +47,26 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
 
+
         mFirebaseAuth = FirebaseAuth.getInstance();
+
+        mRootRef=FirebaseDatabase.getInstance().getReference().child("Member");
+        member=new Member();
+        mRootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists())
+                    id=snapshot.getChildrenCount();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+
         et_email = findViewById(R.id.et_email);
         et_pass = findViewById(R.id.et_pass);
         btn_signUp = findViewById(R.id.btn_sign_up);
@@ -46,13 +74,14 @@ public class SignInActivity extends AppCompatActivity {
         tv_login=findViewById(R.id.tv_login);
         progressBar=findViewById(R.id.pg);
 
+
+
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressBar.setVisibility(View.VISIBLE);
-                String email = et_email.getText().toString();
-                String password = et_pass.getText().toString();
-
+                final String email = et_email.getText().toString();
+                final String password = et_pass.getText().toString();
 
                 if (email.isEmpty()) {
                     et_email.setError("please enter email id");
@@ -60,8 +89,6 @@ public class SignInActivity extends AppCompatActivity {
                 } else if (password.isEmpty()) {
                     et_pass.setError("please enter password");
                     et_pass.requestFocus();
-                } else if (email.isEmpty() && password.isEmpty()) {
-                    Toast.makeText(SignInActivity.this, "Fields are empty!", Toast.LENGTH_LONG).show();
                 }else if(password.length()<6){
                     et_pass.setError("Password must have at least 6 characters");
                 }
@@ -70,10 +97,16 @@ public class SignInActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             progressBar.setVisibility(View.INVISIBLE);
+
                             if (!task.isSuccessful()) {
+
                                 Toast.makeText(SignInActivity.this, "Sign up  unsuccessful, Wrong email id or password!!", Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(SignInActivity.this, "Sign up successful", Toast.LENGTH_LONG).show();
+                                //realtime database
+                                member.setEmail(email);
+                                member.setPassword(password);
+                                mRootRef.child(String.valueOf(id+1)).setValue(member);
 
                                 startActivity(new Intent(SignInActivity.this, HomeActivity.class));
                                 SignInActivity.this.finish();
