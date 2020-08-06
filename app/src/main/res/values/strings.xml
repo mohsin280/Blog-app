@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">LoginFirebase</string>
+    <string name="action_search_tv">Search</string>
+    <string name="action_account_setting_tv">Account Setting</string>
+    <string name="action_logot_tv">Logout</string>
 </resources>

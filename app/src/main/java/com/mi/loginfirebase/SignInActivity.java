@@ -32,8 +32,6 @@ public class SignInActivity extends AppCompatActivity {
     Boolean flag = true;
     long id=0;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
