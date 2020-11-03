@@ -5,8 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,16 +23,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import id.zelory.compressor.Compressor;
 
@@ -44,6 +48,8 @@ public class NewPostActivity extends AppCompatActivity {
     private Button btn_new_post;
     private Uri imageUri = null;
     private ProgressBar progressBar;
+
+    private Bitmap compressedImageFile;
 
     private StorageReference storageReference;
     private FirebaseFirestore firebaseFirestore;
@@ -59,11 +65,13 @@ public class NewPostActivity extends AppCompatActivity {
         new_post_toolbar=findViewById(R.id.new_post_toolbar);
         setSupportActionBar(new_post_toolbar);
         getSupportActionBar().setTitle("Add New Post");
+        //for back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         storageReference = FirebaseStorage.getInstance().getReference();
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
+
 
         current_user_id = firebaseAuth.getCurrentUser().getUid();
 
@@ -87,16 +95,57 @@ public class NewPostActivity extends AppCompatActivity {
                 if(!TextUtils.isEmpty(decs) && imageUri != null){
                     progressBar.setVisibility(View.VISIBLE);
 
-                    String randomName = random();
+                    final String randomName = UUID.randomUUID().toString();
 
-                    final StorageReference filePath = storageReference.child("post images").child(randomName + ".jpg");
+                    final StorageReference filePath = storageReference.child("post_images").child(randomName + ".jpg");
                     filePath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
-                                public void onSuccess(Uri uri) {
-                                    storeToFirestore(uri,decs,current_user_id);
+                                public void onSuccess(final Uri uri) {
+
+                                    // for thumb photo
+                                    File actualImageFile = new File(imageUri.getPath());
+                                    try {
+                                        compressedImageFile = new Compressor(NewPostActivity.this)
+                                                .setMaxHeight(100)
+                                                .setMaxWidth(100)
+                                                .setQuality(2)
+                                                .compressToBitmap(actualImageFile);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                    compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                                    byte[] thumbsData = out.toByteArray();
+
+                                    UploadTask uploadTask = storageReference.child("post_images/thumbs")
+                                            .child(randomName+".jpg").putBytes(thumbsData);
+                                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                            filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                @Override
+                                                public void onSuccess(final Uri uriThumbs) {
+
+                                                    storeToFirestore(uri,uriThumbs,decs,current_user_id);
+
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(NewPostActivity.this,"Error : "+e.getMessage(),Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(NewPostActivity.this,"Error : "+e.getMessage(),Toast.LENGTH_LONG).show();
+                                        }
+                                    });
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -124,9 +173,10 @@ public class NewPostActivity extends AppCompatActivity {
 
     }
 
-    private void storeToFirestore(Uri uri, String decs, String current_user_id) {
+    private void storeToFirestore(Uri uri, Uri uriThumb, String decs, String current_user_id) {
         Map<String,Object> postMap = new HashMap<>();
         postMap.put("image_url",uri.toString());
+        postMap.put("thumb_url",uriThumb.toString());
         postMap.put("desc",decs);
         postMap.put("user_id",current_user_id);
         postMap.put("timestamp",FieldValue.serverTimestamp());
@@ -164,16 +214,5 @@ public class NewPostActivity extends AppCompatActivity {
                 Exception error = result.getError();
             }
         }
-    }
-    public static String random() {
-        Random generator = new Random();
-        StringBuilder randomStringBuilder = new StringBuilder();
-        int randomLength = generator.nextInt(MAX_LENGTH);
-        char tempChar;
-        for (int i = 0; i < randomLength; i++){
-            tempChar = (char) (generator.nextInt(96) + 32);
-            randomStringBuilder.append(tempChar);
-        }
-        return randomStringBuilder.toString();
     }
 }

@@ -37,13 +37,7 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-
-
         mFirebaseAuth = FirebaseAuth.getInstance();
-
-
-
-
 
         et_email = findViewById(R.id.et_email);
         et_pass = findViewById(R.id.et_pass);
@@ -63,12 +57,15 @@ public class SignInActivity extends AppCompatActivity {
 
                 if (email.isEmpty()) {
                     et_email.setError("please enter email id");
+                    progressBar.setVisibility(View.INVISIBLE);
                     et_email.requestFocus();
                 } else if (password.isEmpty()) {
                     et_pass.setError("please enter password");
+                    progressBar.setVisibility(View.INVISIBLE);
                     et_pass.requestFocus();
                 }else if(password.length()<6){
                     et_pass.setError("Password must have at least 6 characters");
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
                 else{
                     mFirebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignInActivity.this, new OnCompleteListener<AuthResult>() {
@@ -87,6 +84,7 @@ public class SignInActivity extends AppCompatActivity {
                         }
                     });
                 }
+
 
             }
         });
