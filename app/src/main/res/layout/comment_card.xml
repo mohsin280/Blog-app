@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/rl_dp1"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            >
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/img_profile_cmt"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/profile_pic"/>
+
+            <TextView
+                android:id="@+id/tv_username_cmt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginLeft="7dp"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@+id/img_profile_cmt"
+                android:layout_toRightOf="@id/img_profile_cmt"
+                android:text="Username"
+                android:textColor="@color/black"
+                android:textSize="17dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_date_cmt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_username_cmt"
+                android:layout_marginLeft="7dp"
+                android:layout_toRightOf="@id/img_profile_cmt"
+                android:text="29 min ago"
+                android:textSize="12dp"/>
+
+            <ImageButton
+                android:id="@+id/btn_cmt_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_action_post_menu"
+                android:background="@android:color/transparent"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                />
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_user_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="dadadfnjvfs"
+            android:padding="8dp"
+            android:textSize="18dp"
+            android:textColor="@color/black"
+            />
+        <VideoView
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+    </LinearLayout>
+
+
+
+</androidx.cardview.widget.CardView>

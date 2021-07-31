@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CommentEditActivity"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/cmt_edit_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light"
+        app:title="Edit"
+        app:titleTextColor="@color/white"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true"
+        >
+        <ImageButton
+            android:id="@+id/btn_edit_cancel_cmt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_clear"
+            android:background="@android:color/transparent"
+            android:layout_marginLeft="4dp"
+            android:layout_gravity="center_vertical"
+            />
+        <EditText
+            android:id="@+id/et_edit_cmt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:hint="Write Something"
+            android:layout_gravity="center_vertical"/>
+        <ImageButton
+            android:id="@+id/btn_edit_send_cmt"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_send"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/state"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,12 +43,12 @@ import id.zelory.compressor.Compressor;
 
 public class NewPostActivity extends AppCompatActivity {
     private Toolbar new_post_toolbar;
-    private static final int MAX_LENGTH = 100;
     private ImageView post_imageView;
     private EditText et_post_description;
     private Button btn_new_post;
     private Uri imageUri = null;
     private ProgressBar progressBar;
+    private String grpCode;
 
     private Bitmap compressedImageFile;
 
@@ -62,11 +63,18 @@ public class NewPostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
 
-        new_post_toolbar=findViewById(R.id.new_post_toolbar);
+        final GrpCode globalGrpCode = (GrpCode) getApplicationContext();
+        grpCode = globalGrpCode.getGrpCode();
+
+        new_post_toolbar = findViewById(R.id.new_post_toolbar);
         setSupportActionBar(new_post_toolbar);
         getSupportActionBar().setTitle("Add New Post");
         //for back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //getting group code
+//        Intent intent = getIntent();
+//        grpCode = intent.getStringExtra("grp_code");
 
         storageReference = FirebaseStorage.getInstance().getReference();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -92,7 +100,7 @@ public class NewPostActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final String decs = et_post_description.getText().toString();
 
-                if(!TextUtils.isEmpty(decs) && imageUri != null){
+                if (!TextUtils.isEmpty(decs) && imageUri != null) {
                     progressBar.setVisibility(View.VISIBLE);
 
                     final String randomName = UUID.randomUUID().toString();
@@ -122,7 +130,7 @@ public class NewPostActivity extends AppCompatActivity {
                                     byte[] thumbsData = out.toByteArray();
 
                                     UploadTask uploadTask = storageReference.child("post_images/thumbs")
-                                            .child(randomName+".jpg").putBytes(thumbsData);
+                                            .child(randomName + ".jpg").putBytes(thumbsData);
                                     uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -130,20 +138,20 @@ public class NewPostActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onSuccess(final Uri uriThumbs) {
 
-                                                    storeToFirestore(uri,uriThumbs,decs,current_user_id);
+                                                    storeToFirestore(uri, uriThumbs, decs, current_user_id);
 
                                                 }
                                             }).addOnFailureListener(new OnFailureListener() {
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(NewPostActivity.this,"Error : "+e.getMessage(),Toast.LENGTH_LONG).show();
+                                                    Toast.makeText(NewPostActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_LONG).show();
                                                 }
                                             });
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(NewPostActivity.this,"Error : "+e.getMessage(),Toast.LENGTH_LONG).show();
+                                            Toast.makeText(NewPostActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_LONG).show();
                                         }
                                     });
                                 }
@@ -163,7 +171,7 @@ public class NewPostActivity extends AppCompatActivity {
                         }
                     });
 
-                }else{
+                } else {
                     Toast.makeText(NewPostActivity.this, "text or image field are empty!!", Toast.LENGTH_LONG).show();
                 }
 
@@ -174,20 +182,23 @@ public class NewPostActivity extends AppCompatActivity {
     }
 
     private void storeToFirestore(Uri uri, Uri uriThumb, String decs, String current_user_id) {
-        Map<String,Object> postMap = new HashMap<>();
-        postMap.put("image_url",uri.toString());
-        postMap.put("thumb_url",uriThumb.toString());
-        postMap.put("desc",decs);
-        postMap.put("user_id",current_user_id);
-        postMap.put("timestamp",FieldValue.serverTimestamp());
+        Map<String, Object> postMap = new HashMap<>();
+        postMap.put("image_url", uri.toString());
+        postMap.put("thumb_url", uriThumb.toString());
+        postMap.put("desc", decs);
+        postMap.put("user_id", current_user_id);
+        postMap.put("timestamp", FieldValue.serverTimestamp());
+        postMap.put("grp_code", grpCode);
 
         firebaseFirestore.collection("Posts")
                 .add(postMap).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Log.d("onSuccess", "onSuccess: ");
-                Toast.makeText(NewPostActivity.this,"Post added",Toast.LENGTH_LONG).show();
-                startActivity(new Intent(NewPostActivity.this,HomeActivity.class));
+                Toast.makeText(NewPostActivity.this, "Post added", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                intent.putExtra("grp_code", grpCode);
+                startActivity(intent);
                 finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -197,11 +208,13 @@ public class NewPostActivity extends AppCompatActivity {
             }
         });
     }
+
     private void cropImagePickerFunc() {
         CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .start(NewPostActivity.this);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

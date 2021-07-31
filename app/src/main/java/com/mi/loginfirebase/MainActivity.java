@@ -28,16 +28,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-    EditText et_email_login;
-    EditText et_pass_login;
-    Button btn_login;
-    TextView tv_sign_up;
-    TextView forgotPass;
-    ImageView iv_vis;
-    Boolean flag = true;
+    private EditText et_email_login;
+    private EditText et_pass_login;
+    private Button btn_login;
+    private TextView tv_sign_up;
+    private TextView forgotPass;
+    private TextView tv_help;
+    private ImageView iv_vis;
+    private Boolean flag = true;
     private ProgressBar progressBar;
-    FirebaseAuth mFirebaseAuth;
-    CheckBox check;
+    private FirebaseAuth mFirebaseAuth;
+    private CheckBox check;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor prefsEditor;
     private Boolean saveLogin;
@@ -49,14 +50,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-        et_email_login=findViewById(R.id.et_email_login);
-        et_pass_login=findViewById(R.id.et_pass_login);
-        btn_login=findViewById(R.id.btn_login);
+        et_email_login = findViewById(R.id.et_email_login);
+        et_pass_login = findViewById(R.id.et_pass_login);
+        btn_login = findViewById(R.id.btn_login);
         tv_sign_up = findViewById(R.id.tv_sign_up);
         check = findViewById(R.id.check);
-        iv_vis=findViewById(R.id.iv_vis);
-        progressBar=findViewById(R.id.pg_l);
-        forgotPass=findViewById(R.id.forgetPass);
+        iv_vis = findViewById(R.id.iv_vis);
+        progressBar = findViewById(R.id.pg_l);
+        forgotPass = findViewById(R.id.forgetPass);
+        tv_help=findViewById(R.id.tv_help);
 
         sharedPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
         prefsEditor = sharedPreferences.edit();
@@ -65,13 +67,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
-                if(mFirebaseUser!=null)
-                {
-                    Toast.makeText(MainActivity.this,"You are logged in!",Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(MainActivity.this,HomeActivity.class));
-                }
-                else{
-                    Toast.makeText(MainActivity.this,"please login!",Toast.LENGTH_LONG).show();
+                if (mFirebaseUser != null) {
+                    Toast.makeText(MainActivity.this, "You are logged in!", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                } else {
+                    Toast.makeText(MainActivity.this, "please login!", Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -83,41 +83,35 @@ public class MainActivity extends AppCompatActivity {
 
                 String email = et_email_login.getText().toString();
                 String password = et_pass_login.getText().toString();
-                if(email.isEmpty())
-                {
+                if (email.isEmpty()) {
                     et_email_login.setError("please enter email id");
                     et_email_login.requestFocus();
-                }
-                else if(password.isEmpty())
-                {
+                } else if (password.isEmpty()) {
                     et_pass_login.setError("please enter password");
                     et_pass_login.requestFocus();
-                }
-                else{
+                } else {
                     //for shredpref
-                    if(v == btn_login)
-                        msharedpref(v,email,password);
-                    mFirebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                    if (v == btn_login)
+                        msharedpref(v, email, password);
+                    mFirebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
 
-                            if(task.isSuccessful()){
-                                Toast.makeText(MainActivity.this,"User logged in!",Toast.LENGTH_LONG).show();
-                            }
-                            else{
-                                Toast.makeText(MainActivity.this,"Wrong email or password!",Toast.LENGTH_LONG).show();
+                            if (task.isSuccessful()) {
+                                Toast.makeText(MainActivity.this, "User logged in!", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "Wrong email or password!", Toast.LENGTH_LONG).show();
                             }
                             progressBar.setVisibility(View.INVISIBLE);
                         }
                     });
                 }
-
             }
         });
         tv_sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,SignInActivity.class));
+                startActivity(new Intent(MainActivity.this, SignUpActivity.class));
                 MainActivity.this.finish();
             }
         });
@@ -125,16 +119,14 @@ public class MainActivity extends AppCompatActivity {
         iv_vis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(flag){
+                if (flag) {
                     et_pass_login.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
                     iv_vis.setImageResource(R.drawable.ic_action_vis);
-                    flag=false;
-
-                }
-                else{
+                    flag = false;
+                } else {
                     et_pass_login.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     iv_vis.setImageResource(R.drawable.ic_action_vis_off);
-                    flag=true;
+                    flag = true;
                 }
 
             }
@@ -155,16 +147,14 @@ public class MainActivity extends AppCompatActivity {
                         mFirebaseAuth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Toast.makeText(MainActivity.this,"Reset link sent to your email.",Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "Reset link sent to your email.", Toast.LENGTH_LONG).show();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(MainActivity.this,"Error! Reset link is not send."+e.getMessage(),Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "Error! Reset link is not send." + e.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         });
-
-
                     }
                 });
                 box.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -173,31 +163,34 @@ public class MainActivity extends AppCompatActivity {
                         //Nothing
                     }
                 });
-
                 box.create().show();
+            }
+        });
+
+        tv_help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Sorry! Developers are sleeping.", Toast.LENGTH_LONG).show();
             }
         });
 
 
         saveLogin = sharedPreferences.getBoolean("saveLogin", false);
-        if(saveLogin)
-        {
+        if (saveLogin) {
             et_email_login.setText(sharedPreferences.getString("username", ""));
             et_pass_login.setText(sharedPreferences.getString("password", ""));
             check.setChecked(true);
         }
 
     }
-    private void msharedpref(View v,String email,String password)
-    {
-        if(check.isChecked())
-        {
+
+    private void msharedpref(View v, String email, String password) {
+        if (check.isChecked()) {
             prefsEditor.putBoolean("saveLogin", true);
             prefsEditor.putString("username", email);
             prefsEditor.putString("password", password);
             prefsEditor.commit();
-        }
-        else {
+        } else {
             prefsEditor.clear();
             prefsEditor.commit();
         }

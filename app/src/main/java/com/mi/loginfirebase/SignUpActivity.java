@@ -21,7 +21,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 
-public class SignInActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
     EditText et_email;
     EditText et_pass;
     Button btn_signUp;
@@ -30,22 +30,21 @@ public class SignInActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     FirebaseAuth mFirebaseAuth;
     Boolean flag = true;
-    long id=0;
+    long id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_sign_up);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         et_email = findViewById(R.id.et_email);
         et_pass = findViewById(R.id.et_pass);
         btn_signUp = findViewById(R.id.btn_sign_up);
-        iv_vis=findViewById(R.id.iv_vis_s);
-        tv_login=findViewById(R.id.tv_login);
-        progressBar=findViewById(R.id.pg);
-
+        iv_vis = findViewById(R.id.iv_vis_s);
+        tv_login = findViewById(R.id.tv_login);
+        progressBar = findViewById(R.id.pg);
 
 
         btn_signUp.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +53,6 @@ public class SignInActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);
                 final String email = et_email.getText().toString();
                 final String password = et_pass.getText().toString();
-
                 if (email.isEmpty()) {
                     et_email.setError("please enter email id");
                     progressBar.setVisibility(View.INVISIBLE);
@@ -63,45 +61,41 @@ public class SignInActivity extends AppCompatActivity {
                     et_pass.setError("please enter password");
                     progressBar.setVisibility(View.INVISIBLE);
                     et_pass.requestFocus();
-                }else if(password.length()<6){
+                } else if (password.length() < 6) {
                     et_pass.setError("Password must have at least 6 characters");
                     progressBar.setVisibility(View.INVISIBLE);
-                }
-                else{
-                    mFirebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignInActivity.this, new OnCompleteListener<AuthResult>() {
+                } else {
+                    mFirebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             progressBar.setVisibility(View.INVISIBLE);
 
                             if (task.isSuccessful()) {
-                                Toast.makeText(SignInActivity.this, "Sign up successful", Toast.LENGTH_LONG).show();
-                                startActivity(new Intent(SignInActivity.this, AccountSetting.class));
+                                Toast.makeText(SignUpActivity.this, "Sign up successful", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(SignUpActivity.this, AccountSetting.class));
                                 finish();
                             } else {
                                 String errorMsg = task.getException().getMessage();
-                                Toast.makeText(SignInActivity.this, "Error :"+errorMsg, Toast.LENGTH_LONG).show();
+                                Toast.makeText(SignUpActivity.this, "Error :" + errorMsg, Toast.LENGTH_LONG).show();
                             }
                         }
                     });
                 }
-
-
             }
         });
 
         iv_vis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(flag){
+                if (flag) {
                     et_pass.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
                     iv_vis.setImageResource(R.drawable.ic_action_vis);
-                    flag=false;
+                    flag = false;
 
-                }
-                else{
+                } else {
                     et_pass.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     iv_vis.setImageResource(R.drawable.ic_action_vis_off);
-                    flag=true;
+                    flag = true;
                 }
 
             }
@@ -109,8 +103,8 @@ public class SignInActivity extends AppCompatActivity {
         tv_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SignInActivity.this,MainActivity.class));
-                SignInActivity.this.finish();
+                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                SignUpActivity.this.finish();
             }
         });
     }

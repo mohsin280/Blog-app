@@ -75,7 +75,6 @@ public class AccountSetting extends AppCompatActivity {
         accnt_toolbar = findViewById(R.id.accnt_toolbar);
         setSupportActionBar(accnt_toolbar);
         getSupportActionBar().setTitle("Account Setting");
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         circleImageView = findViewById(R.id.circle_imageView);
@@ -186,7 +185,7 @@ public class AccountSetting extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             isChanged = true;
                             Toast.makeText(AccountSetting.this, "Account setting is updated", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(AccountSetting.this, HomeActivity.class));
+                            startActivity(new Intent(AccountSetting.this, GroupActivity.class));
                             finish();
                         } else {
                             String error = task.getException().getMessage();

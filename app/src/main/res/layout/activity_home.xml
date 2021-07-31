@@ -40,7 +40,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_action_post_image" />
+                android:src="@drawable/ic_action_new_post" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linear_new_image"
+            android:id="@+id/linear_new_grp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -62,14 +62,59 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_action_vis_off" />
+                android:src="@drawable/ic_action_grp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="new image"
+                android:text="new group"
                 android:layout_marginLeft="5dp"/>
         </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_grp_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout6"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Group Code:"
+            android:textColor="@color/white"
+            android:layout_marginLeft="10dp"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/tv_home_grp_code"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/white"
+            android:text="group code"/>
+
+<!--        <ImageButton-->
+<!--            android:layout_width="36dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:src="@drawable/ic_action_copy"-->
+<!--            android:background="@color/colorAccent"/>-->
+
+        <ImageView
+            android:id="@+id/iv_share_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_share_code"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -79,7 +124,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout6" />
+        app:layout_constraintTop_toBottomOf="@+id/linear_grp_code" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
